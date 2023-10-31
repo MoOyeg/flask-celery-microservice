@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  namespace: celery-workers
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: celery-worker
+  template:
+    metadata:
+      labels:
+        name: celery-worker
+    spec:
+      containers:
+        - name: celery-worker
+          image: xasag94215/flask-celery-microservice
+          command:
+            - "bash"
+            - "-c"
+            - "celery -A main.celery worker -l info"
+          envFrom:
+            - secretRef:
+                name: celery-workers-secret

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: flask-server
-          image: xasag94215/flask-celery-microservice
+          image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
           envFrom:
             - secretRef:
                 name: flask-secret
