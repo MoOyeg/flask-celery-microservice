@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-server
+  namespace: flask-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: flask-server
+  template:
+    metadata:
+      labels:
+        name: flask-server
+    spec:
+      containers:
+        - name: flask-server
+          image: xasag94215/flask-celery-microservice
+          envFrom:
+            - secretRef:
+                name: flask-secret
+          ports:
+            - containerPort: 5000
+              name: rest
