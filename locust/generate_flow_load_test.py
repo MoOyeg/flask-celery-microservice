@@ -1,6 +1,5 @@
 from locust import HttpUser, task, constant
 
-
 class reportService(HttpUser):
 
     wait_time = constant(1)

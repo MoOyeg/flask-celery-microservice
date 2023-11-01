@@ -1,25 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: celery-worker
-  namespace: celery-workers
+  name: locust
+  namespace: locust
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      name: celery-worker
+      name: locust-instance
   template:
     metadata:
       labels:
-        name: celery-worker
+        name: locust-instance
     spec:
       containers:
-        - name: celery-worker
+        - name: locust-instance
           image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
           command:
             - "bash"
             - "-c"
-            - "celery -A main.celery worker -l info"
-          envFrom:
-            - secretRef:
-                name: celery-workers-secret
+            - "locust -f locustfile.py --host=http://flask-server:8080"

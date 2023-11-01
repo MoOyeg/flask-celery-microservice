@@ -1,11 +1,13 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   name: flask-server
   namespace: flask-backend
 spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
   selector:
     name: flask-server
-  ports:
-    - port: 80
-      targetPort: rest

@@ -16,9 +16,12 @@ spec:
       containers:
         - name: flask-server
           image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
+          env:
+            - name: APP_MODULE
+              value: 'main:app'
           envFrom:
             - secretRef:
                 name: flask-secret
           ports:
-            - containerPort: 5000
+            - containerPort: 8080
               name: rest
