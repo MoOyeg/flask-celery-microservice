@@ -3,5 +3,6 @@ resources:
 - imagestream.yaml
 - buildconfig.yaml
 - secret.yaml
-- service.yaml
 - deployment.yaml
+- service.yaml
+- route.yaml

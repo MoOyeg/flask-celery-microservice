@@ -1,5 +1,7 @@
 resources:
 - namespace.yaml
+- imagestream.yaml
+- buildconfig.yaml
 - secret.yaml
 - service.yaml
 - deployment.yaml
