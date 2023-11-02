@@ -13,10 +13,32 @@ spec:
       labels:
         name: locust-instance
     spec:
+      volumes:
+        - name: configmap-locust1
+          configMap:
+            name: cm-complete-flow-test
+            defaultMode: 511
+        - name: configmap-locust2
+          configMap:
+            name: cm-generate-flow-load-test
+            defaultMode: 511
       containers:
         - name: locust-instance
           image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
+          env:
+            - name: LOCUSTFILE_PATH
+              value: /locustfile2/locustfile.py
+            - name: HOST_SERVER
+              value: http://flask-server.flask-backend.svc.cluster.local:8080
           command:
             - "bash"
             - "-c"
-            - "locust -f locustfile.py --host=http://flask-server:8080"
+            - "locust -f $LOCUSTFILE_PATH --host=$HOST_SERVER/"
+          volumeMounts:
+            - name: configmap-locust1
+              mountPath: /locustfile1
+            - name: configmap-locust2
+              mountPath: /locustfile2
+          ports:
+            - containerPort: 8080
+              protocol: TCP

@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: locust
+  namespace: locust
+  labels:
+    name: locust-instance
+spec:
+  to:
+    kind: Service
+    name: locust
+    weight: 100
+  port:
+    targetPort: 8089
+  wildcardPolicy: None

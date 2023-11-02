@@ -1,6 +1,9 @@
+---
 resources:
 - namespace.yaml
 - resourcebinding.yaml
 - cm_complete_flow_load_test.yaml
 - cm_generate_flow_load_test.yaml
 - deployment.yaml
+- service.yaml
+- route.yaml
