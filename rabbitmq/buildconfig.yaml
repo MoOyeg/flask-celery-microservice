@@ -15,12 +15,11 @@ spec:
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5
   strategy:
-    type: Source
-    sourceStrategy:
+    type: Docker
+    dockerStrategy:
       from:
-        kind: ImageStreamTag
-        namespace: openshift
-        name: "rabbitmq:3.8-management"
+        kind: DockerImage
+        name: 'docker.io/rabbitmq:3.8-management'
   postCommit: {}
   source:
     type: Git

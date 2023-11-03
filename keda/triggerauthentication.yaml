@@ -5,8 +5,8 @@ metadata:
 spec:
   secretTargetRef: 
   - parameter: bearerToken 
-    name: ${SA_TOKEN} 
+    name: $SA_TOKEN
     key: token 
   - parameter: ca
-    name: ${SA_TOKEN}
+    name: $SA_TOKEN
     key: ca.crt

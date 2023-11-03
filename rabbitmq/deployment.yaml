@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: rabbitmq
-        image: rabbitmq:3.6.8-management
+        image: image-registry.openshift-image-registry.svc:5000/rabbitmq/rabbitmq:latest
         envFrom:
             - secretRef:
                 name: rabbitmq-secret
@@ -27,3 +27,5 @@ spec:
           name: management
         - containerPort: 5672
           name: rabbitmq
+        - containerPort: 15692
+          name: prometheus

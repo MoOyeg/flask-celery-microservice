@@ -1,0 +1,21 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: cpu-scaledobject
+  namespace: celery-workers
+spec:
+  cooldownPeriod: 100
+  maxReplicaCount: 10
+  minReplicaCount: 1
+  pollingInterval: 10
+  scaleTargetRef:
+    name: celery-worker
+  triggers:
+  - type: cpu 
+    metricType: Utilization 
+    metadata:
+      value: '60' 
+  - type: memory 
+    metricType: Utilization 
+    metadata:
+      value: '80' 

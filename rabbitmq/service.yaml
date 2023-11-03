@@ -16,3 +16,6 @@ spec:
   - port: 15672
     name: rabbitmq-mgmt
     targetPort: management
+  - port: 15692
+    name: prometheus
+    targetPort: prometheus

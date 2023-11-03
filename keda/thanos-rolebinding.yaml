@@ -10,4 +10,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: thanos 
-  namespace: my-project 
+  namespace: celery-workers 

@@ -1,6 +1,5 @@
 resources:
-- namespace.yaml
-- operatorgroup.yaml
-- subscription.yaml
-- scaledobject.yaml
+- thanos-role.yaml
+- thanos-rolebinding.yaml
 - triggerauthentication.yaml
+- scaledobject-cpu.yaml
