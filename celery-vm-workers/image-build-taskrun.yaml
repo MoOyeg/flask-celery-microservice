@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: buildah-as-user-1000
+spec:
+  serviceAccountName: pipelines-sa-userid-1000 
+  params:
+  - name: IMAGE
+    value: image-registry.openshift-image-registry.svc:5000/test/buildahuser
+  taskRef:
+    kind: Task
+    name: buildah-as-user
+  workspaces:
+  - configMap:
+      name: dockerfile 
+    name: source
+  - name: imagepvc
+    persistentVolumeClaim:
+      claimName: custom-celery-dv

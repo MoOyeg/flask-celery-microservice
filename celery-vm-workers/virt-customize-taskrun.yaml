@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: disk-virt-customize-celery-taskrun
+spec:
+  taskRef:
+    kind: Task
+    name: disk-virt-customize
+  params:
+    - name: pvc
+      value: custom-celery-dv3
+    - name: customizeCommands
+      value: |
+        update
+        install git 
+        run /data01/celery-install-script.sh
+        delete /var/cache/dnf
+        firstboot /data02/celery-entrypoint-script.sh
+  workspaces:
+    - name: data01
+      configmap:
+        name: celery-install-script
+    - name: data02
+      configmap:
+        name: celery-entrypoint-script

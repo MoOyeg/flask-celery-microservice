@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  Dockerfile: |
+    FROM kubevirt/container-disk-v1alpha
+    ADD disk.img /disk/
+kind: ConfigMap
+metadata:
+  name: dockerfile
+  namespace: celery-workers

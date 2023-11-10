@@ -1,0 +1,73 @@
+---
+
+apiVersion: tekton.dev/v1beta1
+
+kind: Task
+
+metadata:
+
+  name: oc-wait-until-object-deleted
+  namespace: celery-workers
+
+  labels:
+
+    app.kubernetes.io/version: "0.2"
+
+  annotations:
+
+    tekton.dev/categories: Openshift
+
+    tekton.dev/pipelines.minVersion: "0.17.0"
+
+    tekton.dev/tags: cli
+
+    tekton.dev/displayName: "openshift client"
+
+    tekton.dev/platforms: "linux/amd64"
+
+spec:
+
+  description: >-
+
+    Task continues to check for an OC object until it is deleted
+
+  params:
+
+    - name: OBJECT_NAME
+
+      description: The OpenShift object to check for
+
+      type: string
+
+    - name: OBJECT_TYPE
+
+      description: The Object Type to check for
+      type: string
+
+
+    - name: SLEEP_TIMER
+      
+      description: The time to sleep between checks
+  
+      type: string
+  
+      default: "5"
+
+    - name: VERSION
+
+      description: The OpenShift Version to use
+
+      type: string
+
+      default: "4.12"
+
+  steps:
+
+    - name: oc
+
+      image: quay.io/openshift/origin-cli:$(params.VERSION)
+      command:
+        - /bin/bash
+      args:
+        - -c
+        - while oc get  $(params.OBJECT_TYPE) $(params.OBJECT_NAME);do echo "Waiting for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) import to complete " && sleep $(params.SLEEP_TIMER) ;done

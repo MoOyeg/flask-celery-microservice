@@ -29,7 +29,7 @@ spec:
             - name: LOCUSTFILE_PATH
               value: /locustfile2/locustfile.py
             - name: HOST_SERVER
-              value: http://flask-server.flask-backend.svc.cluster.local:8080
+              value: http://flask-server.flask-backend.svc.cluster.local
           command:
             - "bash"
             - "-c"

@@ -1,0 +1,23 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  annotations:
+    cdi.kubevirt.io/storage.bind.immediate.requested: 'true'
+    cdi.kubevirt.io/storage.deleteAfterCompletion: 'true'
+  name: custom-celery-dv
+  namespace: celery-workers
+  labels:
+    app.kubernetes.io/component: storage
+    app.kubernetes.io/managed-by: cdi-controller
+    app.kubernetes.io/part-of: hyperconverged-cluster
+spec:
+  source:
+    registry:
+      url: >-
+        docker://quay.io/containerdisks/centos-stream:9-2311080206
+  storage:
+    storageClassName: $STORAGECLASS_NAME
+    resources:
+      requests:
+        storage: 12Gi
+        

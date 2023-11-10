@@ -1,0 +1,10 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: celery-custom-build
+  namespace: celery-workers
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: latest

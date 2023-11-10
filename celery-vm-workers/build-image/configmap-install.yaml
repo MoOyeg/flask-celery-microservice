@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: celery-install-script
+  namespace: celery-workers
+immutable: false
+data:
+  celery-install-script.sh: |-
+    #/bin/bash
+    dnf module -y install python38
+    dnf install -y python3-pip
+    git clone https://github.com/MoOyeg/flask-celery-microservice.git
+    pip install -r ./flask-celery-microservice/flask-server-app/requirements.txt

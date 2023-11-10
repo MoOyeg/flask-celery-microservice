@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: celery-custom-build
+  namespace: celery-workers
+  labels:
+    tekton.dev/pipeline: celery-custom-build
+spec:
+  params:
+    - name: OBJECT_NAME
+      value: custom-celery-dv
+    - name: OBJECT_TYPE
+      value: datavolume
+    - name: PVC
+      value: custom-celery-dv
+    - name: IMAGE
+      value: quay.io/mooyeg/containerdisk-celery:latest
+  pipelineRef:
+    name: celery-custom-build
+  serviceAccountName: pipelines-sa-userid-1000 
+  timeouts:
+    pipeline: 1h0m0s
+  workspaces:
+    - name: imagepvc #Needs to be refactored with PVC parameter above
+      persistentVolumeClaim:
+        claimName: custom-celery-dv
+    - configmap:
+        name: dockerfile
+      name: source        
+    - configMap:
+        name: celery-install-script
+      name: data01
+    - configMap:
+        name: celery-entrypoint-script
+      name: data02

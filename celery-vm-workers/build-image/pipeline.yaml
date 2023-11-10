@@ -1,0 +1,77 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: celery-custom-build
+  namespace: celery-workers
+spec:
+  params:
+    - description: The OpenShift object to check for
+      name: OBJECT_NAME
+      type: string
+    - description: The Object Type to check for
+      name: OBJECT_TYPE
+      type: string
+    - description: The PVC that virt-customize will act on
+      name: PVC
+      type: string
+    - description: OUTPUT ContainerDisk IMAGE
+      name: IMAGE
+      type: string
+  tasks:
+    - name: oc-wait-until-object-deleted
+      params:
+        - name: OBJECT_NAME
+          value: $(params.OBJECT_NAME)
+        - name: OBJECT_TYPE
+          value: $(params.OBJECT_TYPE)
+        - name: SLEEP_TIMER
+          value: '5'
+        - name: VERSION
+          value: '4.12'
+      taskRef:
+        kind: Task
+        name: oc-wait-until-object-deleted
+    - name: disk-virt-customize
+      workspaces:
+        - name: data01
+          workspace: data01
+        - name: data02
+          workspace: data02
+      params:
+        - name: pvc
+          value: $(params.PVC)
+        - name: customizeCommands
+          value: |
+            update
+            install git 
+            run /data01/celery-install-script.sh
+            delete /var/cache/dnf
+            firstboot /data02/celery-entrypoint-script.sh
+        - name: verbose
+          value: 'false'
+        - name: additionalOptions
+          value: ''
+      runAfter:
+        - oc-wait-until-object-deleted
+      taskRef:
+        kind: Task
+        name: disk-virt-customize
+    - name: build-containerdisk
+      workspaces: 
+        - name: source
+          workspace: source
+        - name: imagepvc
+          workspace: imagepvc
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)        
+      taskRef:
+        kind: Task
+        name: buildah-containerdisk-as-user
+      runAfter:
+        - disk-virt-customize
+  workspaces:
+    - name: data01 
+    - name: data02
+    - name: source
+    - name: imagepvc

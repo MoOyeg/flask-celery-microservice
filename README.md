@@ -31,21 +31,18 @@ oc apply -k ./locust
 oc apply -k ./keda-operator
 ```
 
-oc create sa/thanos -n celerty-workers
-SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
-
-
-oc apply -k ./keda
-
-
 oc create serviceaccount thanos -n celery-workers
 export SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
-oc kustomize ./keda | envsubst
+oc kustomize ./keda | envsubst | oc apply -f -
+
+We need a StorageClass that supports filesystems
+export STORAGECLASS_NAME=ocs-storagecluster-cephfs   
+oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -
+
 
 
 Clean up
 oc delete -k ./keda
-
 oc delete -k ./keda-operator
 
 oc delete -k ./locust
