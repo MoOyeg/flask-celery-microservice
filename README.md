@@ -35,13 +35,47 @@ oc create serviceaccount thanos -n celery-workers
 export SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
 oc kustomize ./keda | envsubst | oc apply -f -
 
-We need a StorageClass that supports filesystems
-export STORAGECLASS_NAME=ocs-storagecluster-cephfs   
-oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -
+
+## Creating Celery VM's
+You can build the VM image or use the pre-built image:
 
 
+### Build VM Image  
+- To build the image we need a StorageClass that supports filesystems, export the name of the storageclass:
 
-Clean up
+    ```bash
+    export STORAGECLASS_NAME=ocs-storagecluster-cephfs
+    ```
+
+- Export the Registry of the output image e.g.
+
+    ```bash
+    export OUTPUT_IMAGE=quay.io/mooyeg/containerdisk-celery:latest
+    ```
+
+- [Create a secret with credentials for your registry](https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-allow-pods-to-reference-images-from-secure-registries_using-image-pull-secrets)
+
+- Link your registry pull-secret with your serviceaccount 
+
+    ```bash
+    oc secrets link pipelines-sa-userid-1000 quay-pull-secret -n celery-workers --for=pull,mount    
+    ```
+
+- Create the necessary manifests to build your image
+
+   ```bash
+   oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -   
+   ```
+
+
+## Clean up
+
+### Clean Up VM's
+    ```bash
+    oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f - 
+    ```
+
+
 oc delete -k ./keda
 oc delete -k ./keda-operator
 

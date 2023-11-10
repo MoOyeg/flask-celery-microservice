@@ -6,8 +6,8 @@ metadata:
 immutable: false
 data:
   celery-install-script.sh: |-
-    #/bin/bash
-    dnf module -y install python38
-    dnf install -y python3-pip
-    git clone https://github.com/MoOyeg/flask-celery-microservice.git
+    #/bin/sh
+
+    mkdir flask-celery-microservice
+    git clone https://github.com/MoOyeg/flask-celery-microservice.git flask-celery-microservice
     pip install -r ./flask-celery-microservice/flask-server-app/requirements.txt

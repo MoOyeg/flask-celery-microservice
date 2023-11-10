@@ -1,12 +1,12 @@
 resources:
-- datavolume.yaml
-- buildah-task.yaml
-- buildah-sa.yaml
-- openshift-client.yaml
-- virt-customize-task.yaml
-- imagestream.yaml
-- configmap-dockerfile.yaml
-- configmap-entrypoint.yaml
-- configmap-install.yaml
-- pipeline.yaml
-- pipelinerun.yaml
+- 100-datavolume.yaml
+- 200-buildah-task.yaml
+- 200-buildah-sa.yaml
+- 200-openshift-client.yaml
+- 200-virt-customize-task.yaml
+- 400-imagestream.yaml
+- 300-configmap-dockerfile.yaml
+- 300-configmap-entrypoint.yaml
+- 300-configmap-install.yaml
+- 500-pipeline.yaml
+- 500-pipelinerun.yaml

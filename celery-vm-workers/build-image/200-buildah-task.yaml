@@ -14,6 +14,9 @@ spec:
   params:
   - name: IMAGE
     description: Reference of the image buildah will produce.
+  - name: pvc
+    description: PersistentVolumeClaim to run the the virt-customize script in. PVC should be in the same namespace as taskrun/pipelinerun.
+    type: string    
   - name: BUILDER_IMAGE
     description: The location of the buildah builder image.
     default: registry.redhat.io/rhel8/buildah@sha256:99cae35f40c7ec050fed3765b2b27e0b8bbea2aa2da7c16408e2ca13c60ff8ee
@@ -49,14 +52,12 @@ spec:
     type: string
   workspaces:
   - name: source
-  - name: imagepvc
-    mountPath: /image-pvc
   steps:
   - name: build
     securityContext:
       runAsUser: 1000 
     image: $(params.BUILDER_IMAGE)
-    workingDir: $(workspaces.imagepvc.path)
+    workingDir: /image-pvc
     script: |
       echo "Running as USER ID `id`"
       buildah --storage-driver=$(params.STORAGE_DRIVER) bud \
@@ -66,12 +67,17 @@ spec:
       [[ "$(params.SKIP_PUSH)" == "true" ]] && echo "Push skipped" && exit 0
       buildah --storage-driver=$(params.STORAGE_DRIVER) push \
         $(params.PUSH_EXTRA_ARGS) --tls-verify=$(params.TLSVERIFY) \
-        --digestfile $(workspaces.imagepvc.path)/image-digest $(params.IMAGE) \
+        --digestfile /image-pvc/image-digest $(params.IMAGE) \
         docker://$(params.IMAGE)
-      cat $(workspaces.imagepvc.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
+      cat /image-pvc/image-digest | tee /tekton/results/IMAGE_DIGEST
     volumeMounts:
     - name: varlibcontainers
       mountPath: /home/build/.local/share/containers 
+    - mountPath: /image-pvc
+      name: imagepvc
   volumes:
   - name: varlibcontainers
     emptyDir: {}
+  - name: imagepvc
+    persistentVolumeClaim:
+      claimName: $(params.pvc)

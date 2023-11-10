@@ -2,7 +2,7 @@ apiVersion: v1
 data:
   Dockerfile: |
     FROM kubevirt/container-disk-v1alpha
-    ADD disk.img /disk/
+    ADD --chown=107:107 disk.img /disk/
 kind: ConfigMap
 metadata:
   name: dockerfile

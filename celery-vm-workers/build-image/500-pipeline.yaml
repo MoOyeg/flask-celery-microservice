@@ -43,10 +43,12 @@ spec:
         - name: customizeCommands
           value: |
             update
-            install git 
+            install git,python3,python3-pip
+            upload /data01/celery-install-script.sh:/root/celery-install-script.sh
             run /data01/celery-install-script.sh
-            delete /var/cache/dnf
+            upload /data02/celery-entrypoint-script.sh:/root/celery-entrypoint-script.sh
             firstboot /data02/celery-entrypoint-script.sh
+            delete /var/cache/dnf
         - name: verbose
           value: 'false'
         - name: additionalOptions
@@ -57,12 +59,12 @@ spec:
         kind: Task
         name: disk-virt-customize
     - name: build-containerdisk
-      workspaces: 
+      workspaces:
         - name: source
           workspace: source
-        - name: imagepvc
-          workspace: imagepvc
       params:
+        - name: pvc
+          value: $(params.PVC)
         - name: IMAGE
           value: $(params.IMAGE)        
       taskRef:
@@ -74,4 +76,4 @@ spec:
     - name: data01 
     - name: data02
     - name: source
-    - name: imagepvc
+

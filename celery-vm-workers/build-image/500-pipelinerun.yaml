@@ -14,16 +14,13 @@ spec:
     - name: PVC
       value: custom-celery-dv
     - name: IMAGE
-      value: quay.io/mooyeg/containerdisk-celery:latest
+      value: $OUTPUT_IMAGE
   pipelineRef:
     name: celery-custom-build
   serviceAccountName: pipelines-sa-userid-1000 
   timeouts:
     pipeline: 1h0m0s
   workspaces:
-    - name: imagepvc #Needs to be refactored with PVC parameter above
-      persistentVolumeClaim:
-        claimName: custom-celery-dv
     - configmap:
         name: dockerfile
       name: source        

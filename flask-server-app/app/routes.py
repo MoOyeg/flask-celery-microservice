@@ -28,30 +28,49 @@ def get_report(report_id):
 @app.route('/replica', methods=['POST'])
 def scale():
     '''Command helps to scale  the KEDA Scaled Object using oc binary'''
+    '''Simulates the idea that the application can choose when to manually scale it's own resources based on some logic'''
 
     try:
-        minreplica = request.args.get('minreplicacount')
-        maxreplica = request.args.get('maxreplicacount')
+        minreplicacount = request.args.get('minreplicacount')
+        maxreplicacount = request.args.get('maxreplicacount')
         scaledobject = request.args.get('scaledobject')
         if scaledobject is None:
             scaledobject = "pod-scaledobject"
     except Exception as e:
-        return jsonify({"status":"Could not obtain arguments from request"})
+        return jsonify({"status":"Error","msg":"Could not obtain arguments from request"})
 
-    if scaledobject.lower != "pod-scaledobject" or scaledobject.lower != "vm-scaledobject":
-        return jsonify({"status":"Scaled object must be either %s or %s".format("pod-scaledobject","vm-scaledobject")})
-    
-    
+    if scaledobject.lower() != "pod-scaledobject" and scaledobject.lower() != "vm-scaledobject":
+        return jsonify({"status":"Error","msg": "Scaled object argument(scaledobject) must be either pod-scaledobject or vm-scaledobject"})
         
-        try:
-            minreplica = int(minreplica)
-            maxreplica = int(maxreplica)
-            cmd = '''oc patch scalpatch scaledobject cpu-scaledobject --type=merge -p '{"spec":{"%s":2}}'''.format(minreplica)
-            
-            
-            
-            process = subprocess.Popen(['echo', 'More output'],
-                     stdout=subprocess.PIPE, 
-                     stderr=subprocess.PIPE)
+    try:
+        if minreplicacount is None and maxreplicacount is None:
+            return jsonify({"status":"Either minreplicacount or maxreplicacount must be provided"})
+        elif minreplicacount is not None and maxreplicacount is not None:
+            minreplicacount = int(minreplicacount)
+            maxreplicacount = int(maxreplicacount)
+            patch="{\"spec\": {\"minReplicaCount\": " + str(minreplicacount) + ",\"maxReplicaCount\": " + str(maxreplicacount) + "} }"
+        elif minreplicacount is not None:
+            minreplicacount = int(minreplicacount)
+            patch="{\"spec\": {\"minReplicaCount\": " + str(minreplicacount) + "} }"
+        elif maxreplicacount is not None:
+            maxreplicacount = int(maxreplicacount)
+            patch="{\"spec\": {\"maxReplicaCount\": " + str(maxreplicacount) + "} }"              
+    except:
+        return jsonify({"status":"Could not scale the object"})
+              
+    
+    try:
+        result = subprocess.run(['oc', 'patch','scaledobject',scaledobject,
+                             '--type','merge','-p',
+                            patch],capture_output=True, text=True)
+    except:
+        return jsonify({"status":"Error","msg":"Could not scale the object"})
+    
+    if result.stderr != '' or result.returncode != 0:
+        return jsonify({"status":"Error","msg":"Could not scale the object","stdout":result.stdout,"stderr":result.stderr})
+    else:
+        return jsonify({"status":"Success","msg":"Scale Command was Successful","stdout":result.stdout})
+
+
             
 
