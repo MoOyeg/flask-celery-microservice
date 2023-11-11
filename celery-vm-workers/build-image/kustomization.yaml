@@ -4,6 +4,7 @@ resources:
 - 200-buildah-sa.yaml
 - 200-openshift-client.yaml
 - 200-virt-customize-task.yaml
+- 200-git-clone.yaml
 - 400-imagestream.yaml
 - 300-configmap-dockerfile.yaml
 - 300-configmap-entrypoint.yaml

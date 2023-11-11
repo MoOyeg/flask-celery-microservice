@@ -17,6 +17,15 @@ spec:
     - description: OUTPUT ContainerDisk IMAGE
       name: IMAGE
       type: string
+    - description: GIT Url to clone
+      name: URL
+      type: string
+    - description: GIT Revision to checkout 
+      name: REVISION
+      type: string
+    - description: GIT Repo Name
+      name: REPO_NAME
+      type: string
   tasks:
     - name: oc-wait-until-object-deleted
       params:
@@ -31,30 +40,47 @@ spec:
       taskRef:
         kind: Task
         name: oc-wait-until-object-deleted
+    - name: git-clone-repository
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: url
+          value: $(params.URL)
+        - name: revision
+          value: $(params.REVISION))        
+      taskRef:
+        kind: Task
+        name: git-clone
+      runAfter:
+        - oc-wait-until-object-deleted
     - name: disk-virt-customize
       workspaces:
         - name: data01
           workspace: data01
         - name: data02
           workspace: data02
+        - name: output
+          workspace: output
       params:
         - name: pvc
           value: $(params.PVC)
+        - name: repo_name
+          value: $(params.REPO_NAME)
         - name: customizeCommands
           value: |
             update
             install git,python3,python3-pip
-            upload /data01/celery-install-script.sh:/root/celery-install-script.sh
-            run /data01/celery-install-script.sh
-            upload /data02/celery-entrypoint-script.sh:/root/celery-entrypoint-script.sh
-            firstboot /data02/celery-entrypoint-script.sh
+            upload /output/$(params.REPO_NAME):/root/$(params.REPO_NAME)
+            run pip3 install -r /root/$(params.REPO_NAME)/flask-server-app/requirements.txt
+            firstboot /root/$(params.REPO_NAME)/celery-vm-workers/build-image/celery-entrypoint-script.sh
             delete /var/cache/dnf
         - name: verbose
           value: 'false'
         - name: additionalOptions
           value: ''
       runAfter:
-        - oc-wait-until-object-deleted
+        - git-clone
       taskRef:
         kind: Task
         name: disk-virt-customize
@@ -76,4 +102,6 @@ spec:
     - name: data01 
     - name: data02
     - name: source
+    - name: output
+    
 
