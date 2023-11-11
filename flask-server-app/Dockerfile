@@ -8,7 +8,13 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Install Requirements
-RUN pip install -r requirements.txt
+RUN apt update && apt install -y wget && \
+    wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz && \
+    tar -xvf openshift-client-linux.tar.gz && \
+    mv oc /usr/local/bin && \
+    mv kubectl /usr/local/bin && \
+    rm -rf openshift-client-linux.tar.gz && \
+    pip install -r requirements.txt
 
 # Copy code
 COPY . /app/

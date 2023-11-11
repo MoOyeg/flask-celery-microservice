@@ -70,9 +70,9 @@ You can build the VM image or use the pre-built image:
 
 ## Clean up
 
-### Clean Up VM's
+### Clean Up VM Build
     ```bash
-    oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f - 
+    oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f - 
     ```
 
 
