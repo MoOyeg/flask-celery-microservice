@@ -61,8 +61,9 @@ def scale():
     
     try:
         result = subprocess.run(['oc', 'patch','scaledobject',scaledobject,
-                             '--type','merge','-p',
-                            patch],capture_output=True, text=True)
+                             '--type','merge',
+                             '-n','celery-workers',
+                             '-p', patch],capture_output=True, text=True)
     except:
         return jsonify({"status":"Error","msg":"Could not scale the object"})
     

@@ -1,6 +1,9 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/MoOyeg/flask-celery-microservice.git'
   name: flask-server
   namespace: flask-backend
   labels:
@@ -15,18 +18,15 @@ spec:
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5
   strategy:
-    type: Source
-    sourceStrategy:
-      from:
-        kind: ImageStreamTag
-        namespace: openshift
-        name: "python:3.8-ubi8"
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
   postCommit: {}
   source:
     type: Git
-    contextDir: /flask-server-app
     git:
-      uri: "https://github.com/MoOyeg/flask-celery-microservice.git"
+      uri: 'https://github.com/MoOyeg/flask-celery-microservice.git'
+    contextDir: /flask-server-app
   triggers:
     - type: ConfigChange
     - type: ImageChange

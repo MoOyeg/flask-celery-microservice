@@ -71,7 +71,7 @@ spec:
             mkdir /$(params.REPO_NAME)
             copy-in /output:/$(params.REPO_NAME)
             run-command pip3 install -r /$(params.REPO_NAME)/output/flask-server-app/requirements.txt
-            firstboot /$(params.REPO_NAME)/output/celery-vm-workers/build-image/celery-entrypoint-script.sh
+            firstboot /output/celery-vm-workers/build-image/celery-entrypoint-script.sh
             delete /var/cache/dnf
         - name: verbose
           value: 'false'

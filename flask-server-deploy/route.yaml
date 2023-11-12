@@ -9,5 +9,5 @@ spec:
     name: flask-server
     weight: 100
   port:
-    targetPort: 8080
+    targetPort: 5000
   wildcardPolicy: None
