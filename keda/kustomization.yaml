@@ -2,4 +2,4 @@ resources:
 - thanos-role.yaml
 - thanos-rolebinding.yaml
 - triggerauthentication.yaml
-- scaledobject-cpu.yaml
+- pod-scaledobject.yaml

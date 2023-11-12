@@ -3,3 +3,5 @@ resources:
 - secret.yaml
 - rolebinding.yaml
 - deployment.yaml
+- patch-scaledobject-role.yaml
+- patch-rolebinding.yaml

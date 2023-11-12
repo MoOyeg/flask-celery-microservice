@@ -1,0 +1,23 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vm-scaledobject
+  namespace: celery-workers
+spec:
+  cooldownPeriod: 100
+  maxReplicaCount: 10
+  minReplicaCount: 1
+  pollingInterval: 10
+  scaleTargetRef:
+    apiVersion: pool.kubevirt.io/v1alpha1
+    kind: VirtualMachinePool
+    name: celery-workers-pool
+  triggers:
+  - type: cpu 
+    metricType: Utilization 
+    metadata:
+      value: '80' 
+  - type: memory 
+    metricType: Utilization 
+    metadata:
+      value: '90' 

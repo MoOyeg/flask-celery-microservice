@@ -1,0 +1,15 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: patch-scaled-objects
+  namespace: celery-workers
+rules:
+  - verbs:
+      - get
+      - watch
+      - list
+      - patch
+    apiGroups:
+      - keda.sh
+    resources:
+      - scaledobjects

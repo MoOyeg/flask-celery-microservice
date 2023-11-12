@@ -1,0 +1,13 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: patch-scaled-object-app
+  namespace: celery-workers
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: flask-backend
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: patch-scaled-objects
