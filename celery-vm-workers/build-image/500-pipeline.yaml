@@ -18,10 +18,7 @@ spec:
       name: IMAGE
       type: string
     - description: GIT Url to clone
-      name: URL
-      type: string
-    - description: GIT Revision to checkout 
-      name: REVISION
+      name: url
       type: string
     - description: GIT Repo Name
       name: REPO_NAME
@@ -46,11 +43,9 @@ spec:
           workspace: output
       params:
         - name: url
-          value: $(params.URL)
-        - name: revision
-          value: $(params.REVISION))        
+          value: $(params.url)
       taskRef:
-        kind: Task
+        kind: ClusterTask
         name: git-clone
       runAfter:
         - oc-wait-until-object-deleted
@@ -70,17 +65,20 @@ spec:
         - name: customizeCommands
           value: |
             update
-            install git,python3,python3-pip
-            upload /output/$(params.REPO_NAME):/root/$(params.REPO_NAME)
-            run pip3 install -r /root/$(params.REPO_NAME)/flask-server-app/requirements.txt
-            firstboot /root/$(params.REPO_NAME)/celery-vm-workers/build-image/celery-entrypoint-script.sh
+            install git,python3,python3-pip,gcc
+            run-command dnf groupinstall -y "Development Tools"
+            run-command pip3 install wheel
+            mkdir /$(params.REPO_NAME)
+            copy-in /output:/$(params.REPO_NAME)
+            run-command pip3 install -r /$(params.REPO_NAME)/output/flask-server-app/requirements.txt
+            firstboot /$(params.REPO_NAME)/output/celery-vm-workers/build-image/celery-entrypoint-script.sh
             delete /var/cache/dnf
         - name: verbose
           value: 'false'
         - name: additionalOptions
           value: ''
       runAfter:
-        - git-clone
+        - git-clone-repository
       taskRef:
         kind: Task
         name: disk-virt-customize

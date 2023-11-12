@@ -6,5 +6,6 @@ mkdir /tmp/celery
 mount /dev/vdc /tmp/celery
 export CELERY_BROKER_URL=$(cat /tmp/celery/CELERY_BROKER_URL)
 export CELERY_RESULT_BACKEND=$(cat /tmp/celery/CELERY_RESULT_BACKEND)
-export SECRET_KEY=$(cat /tmp/celery/SECRET_KEY) 
-python -m celery worker -l info
+export SECRET_KEY=$(cat /tmp/celery/SECRET_KEY)
+cd /flask-celery-microservice/output/flask-server-app
+python3 -m celery -A main.celery worker -l info

@@ -67,6 +67,12 @@ spec:
       persistentVolumeClaim:
         claimName: $(params.pvc)
   workspaces:
+    - name: output
+      description: |
+        The output workspace is used to clone the git repository
+        and to store the resulting image.
+      optional: false
+      mountPath: /output
     - name: data01
       description: |
         An optional workspace that may contain files or secrets to be

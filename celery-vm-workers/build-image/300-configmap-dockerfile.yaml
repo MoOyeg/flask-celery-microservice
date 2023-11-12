@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   Dockerfile: |
-    FROM kubevirt/container-disk-v1alpha
+    FROM scratch
     ADD --chown=107:107 disk.img /disk/
 kind: ConfigMap
 metadata:

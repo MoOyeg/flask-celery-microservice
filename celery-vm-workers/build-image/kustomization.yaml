@@ -1,13 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 resources:
 - 100-datavolume.yaml
 - 200-buildah-task.yaml
 - 200-buildah-sa.yaml
 - 200-openshift-client.yaml
 - 200-virt-customize-task.yaml
-- 200-git-clone.yaml
-- 400-imagestream.yaml
+#- 200-git-clone.yaml
 - 300-configmap-dockerfile.yaml
 - 300-configmap-entrypoint.yaml
 - 300-configmap-install.yaml
+- 400-imagestream.yaml
 - 500-pipeline.yaml
 - 500-pipelinerun.yaml

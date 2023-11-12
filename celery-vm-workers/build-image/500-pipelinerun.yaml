@@ -15,15 +15,17 @@ spec:
       value: custom-celery-dv
     - name: IMAGE
       value: $OUTPUT_IMAGE
-    - name: URL
+    - name: url
       value: https://github.com/MoOyeg/flask-celery-microservice.git
-    - name: REVISION
-      value: main
     - name: REPO_NAME
       value: flask-celery-microservice
   pipelineRef:
     name: celery-custom-build
-  serviceAccountName: pipelines-sa-userid-1000 
+  taskRunSpecs:
+    - pipelineTaskName: disk-virt-customize
+      taskServiceAccountName: pipelines-sa-userid-1000
+    - pipelineTaskName: build-containerdisk
+      taskServiceAccountName: pipelines-sa-userid-1000
   timeouts:
     pipeline: 1h0m0s
   workspaces:
@@ -36,11 +38,11 @@ spec:
     - configMap:
         name: celery-entrypoint-script
       name: data02
-    - name: output
+    - name: output      
       volumeClaimTemplate:
         spec:
           accessModes:
-            - ReadWriteMany
+            - ReadWriteOnce
           resources:
             requests:
               storage: 1Gi
