@@ -1,5 +1,5 @@
 amqp>=5.2.0
-backports.zoneinfo>=0.2.1
+backports.zoneinfo==0.2.1
 billiard>=4.2.0
 blinker>=1.7.0
 Brotli>=1.1.0
