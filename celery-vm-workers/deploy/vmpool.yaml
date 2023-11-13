@@ -44,7 +44,7 @@ spec:
               type: pc-q35-rhel9.2.0
             resources:
               requests:
-                memory: 2Gi
+                memory: 0.5Gi
           terminationGracePeriodSeconds: 0
           volumes:
             - containerDisk:

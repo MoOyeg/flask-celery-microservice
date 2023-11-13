@@ -5,7 +5,7 @@ metadata:
   namespace: celery-workers
 spec:
   cooldownPeriod: 100
-  maxReplicaCount: 10
+  maxReplicaCount: 2
   minReplicaCount: 1
   pollingInterval: 10
   scaleTargetRef:

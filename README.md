@@ -100,6 +100,20 @@ Note: Pod image will fail until build is complete
   We should also be able to see data on RabbitMQ's Queue Tab specifically for the Celery Queue and see how much each consumer is processing.
   ![Celery Queue](./images/celery-queue.png)
 
+- Being testing KEDA with [enabled user workload monitoring](https://docs.openshift.com/container-platform/4.13/monitoring/enabling-monitoring-for-user-defined-projects.html)
+  ```bash
+  cat << EOF | oc create -f -
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cluster-monitoring-config
+    namespace: openshift-monitoring
+  data:
+    config.yaml: |
+      enableUserWorkload: true
+  EOF
+  ```
+  echo << EOF >>
 
 - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I ama troubleshooting.
 
@@ -115,12 +129,12 @@ To simulate the application use-case where the application might want to be able
 - Set the VM's max replicas to 6
 
 ```bash
-curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?maxreplicacount=6&scaledobject=vm-scaledobject'
+curl -X POST -i "http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?maxreplicacount=6&scaledobject=vm-scaledobject"
 ```
 
 - Set the Pod's min replicas to 2
 ```bash
-curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?minreplicacount=2&scaledobject=pod-scaledobject'
+curl -X POST -i "http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?minreplicacount=2&scaledobject=pod-scaledobject"
 ```
 
 

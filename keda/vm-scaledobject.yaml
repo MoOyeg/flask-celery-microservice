@@ -16,8 +16,8 @@ spec:
   - type: cpu 
     metricType: Utilization 
     metadata:
-      value: '80' 
+      value: '75' 
   - type: memory 
     metricType: Utilization 
     metadata:
-      value: '90' 
+      value: '80' 
