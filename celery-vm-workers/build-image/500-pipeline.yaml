@@ -68,6 +68,7 @@ spec:
             install git,python3,python3-pip,gcc
             run-command dnf groupinstall -y "Development Tools"
             run-command pip3 install wheel
+            run-command timedatectl set-timezone UTC
             mkdir /$(params.REPO_NAME)
             copy-in /output:/$(params.REPO_NAME)
             run-command pip3 install -r /$(params.REPO_NAME)/output/flask-server-app/requirements.txt

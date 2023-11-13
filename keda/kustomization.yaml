@@ -3,3 +3,4 @@ resources:
 - thanos-rolebinding.yaml
 - triggerauthentication.yaml
 - pod-scaledobject.yaml
+- vm-scaledobject.yaml

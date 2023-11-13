@@ -30,7 +30,7 @@ Note: Pod image will fail until build is complete
     ```bash
     oc apply -k ./flask-server-deploy
     ```
-- Build and deploy our RabbitMQ image and Pod.  
+- Build and deploy our RabbitMQ image and Pod  
 
     ```bash
     oc apply -k ./rabbitmq
@@ -57,15 +57,77 @@ Note: Pod image will fail until build is complete
     oc apply -k ./keda-operator
     ```
 
-### Creating Celery VM's.
-You can build the VM image or use the pre-built image. 
+- Deploy Celery VM's with pre-built image. [To Build your own VM image](#building-celery-vmsoptional)  
 
-- Deploy with the pre-built image  
+    ```bash
+    oc apply -k ./celery-vm-workers/deploy
+    ```
+
+## How to Test
+- Log into RabbitMQ to confirm Celery workers have registered as consumers
+  Access RabbitMQ Mgmt URL at 
   ```bash
-  oc apply -k ./celery-vm-workers/deploy
+  oc get route rabbitmq-mgmt -n rabbitmq -o jsonpath='{.spec.host}'
   ```
 
-- Build VM Image(Optional).
+  Username and Password are:
+  ```bash
+  oc extract secret/rabbitmq-secret -n rabbitmq --to=-
+  ```
+
+  Under the connections tab we should be able to see the IP address's for the VM's and Pod's
+  ```bash
+  oc get vmis -n celery-workers
+  ```
+
+  ```bash
+  oc get pods -n celery-workers -o wide
+  ```
+
+- We can run a loadtest using the locust interface
+  Obtain the Locust interface URL
+
+  ```bash
+  oc get route locust -n locust -o jsonpath='{.spec.host}'
+  ```
+
+  On the locust URL start a user with as many users and spawn rate as required, the url should already be pointing to the flask server endpoint.
+  ![Locust Interface](./images/locust.png)
+
+  With our test started we should be getting data on locust charts.
+  ![Locust Charts](./images/locust-charts.png)
+
+  We should also be able to see data on RabbitMQ's Queue Tab specifically for the Celery Queue and see how much each consumer is processing.
+  ![Celery Queue](./images/celery-queue.png)
+
+
+- To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I ama troubleshooting.
+
+    ```bash
+    oc apply -k ./keda    
+    ```
+
+- You can re-run the locust test above to see how it handles autoscaling.
+
+### Simulate Application Manual Scaling 
+To simulate the application use-case where the application might want to be able to pre-scale or use it's own logic to control scaling. We send a curl request to our flask application which has embedded logic(it just shells out to oc cmd line) to scale down our instances.
+
+- Set the VM's max replicas to 6
+
+```bash
+curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?maxreplicacount=6&scaledobject=vm-scaledobject'
+```
+
+- Set the Pod's min replicas to 2
+```bash
+curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?minreplicacount=2&scaledobject=pod-scaledobject'
+```
+
+
+### Building Celery VM's(Optional)
+You can build the VM image or use the pre-built image. 
+
+- Build VM Image
     To build the image we need a StorageClass that supports filesystems, export the name of the storageclass:
 
     ```bash
@@ -80,7 +142,7 @@ You can build the VM image or use the pre-built image.
 
     [Create a secret with credentials for your registry](https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-allow-pods-to-reference-images-from-secure-registries_using-image-pull-secrets)
 
-    Create the necessary manifests to build your image
+    Create the necessary manifests to build your image.(Might need to restart pipelinerun)
 
     ```bash
     oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -   
@@ -92,19 +154,6 @@ You can build the VM image or use the pre-built image.
     oc secrets link pipelines-sa-userid-1000 quay-pull-secret -n celery-workers --for=pull,mount    
     ```
 
-### Simulate Application Manual Scaling 
-To simulate the application use-case where the application might want to be able to pre-scale or use it's own logic to control scaling. 
-
-- Set the VM's max replicas to 6
-
-```bash
-curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?maxreplicacount=6&scaledobject=vm-scaledobject'
-```
-
-- Set the Pod's min replicas to 2
-```bash
-curl -X POST -i 'http://$(oc get route flask-server -n flask-backend -o jsonpath='{.spec.host}')/replica?minreplicacount=2&scaledobject=pod-scaledobject'
-```
 
 ### Enable Autoscaling via RabbitMQ Queue Length(TODO)
 oc create serviceaccount thanos -n celery-workers
@@ -113,13 +162,9 @@ oc kustomize ./keda | envsubst | oc apply -f -
 
 
 ## Clean up
-
-### Clean Up VM Build
-    ```bash
-    oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f - 
-    ```
-
-### All Clean Up
+```bash
+oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f -
+oc delete -k ./celery-vm-workers/deploy
 oc delete -k ./keda
 oc delete -k ./keda-operator
 oc delete -k ./locust
@@ -127,7 +172,7 @@ oc delete -k ./celery-workers
 oc delete -k ./postgresql
 oc delete -k ./rabbitmq
 oc delete -k ./flask-server-deploy
-
+```
 
 
 

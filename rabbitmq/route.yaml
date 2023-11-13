@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: rabbitmq-mgmt
+  namespace: rabbitmq
+spec:
+  to:
+    kind: Service
+    name: rabbitmq
+    weight: 100
+  port:
+    targetPort: rabbitmq-mgmt
+  tls:
+    termination: edge
+  wildcardPolicy: None
