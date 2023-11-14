@@ -113,8 +113,6 @@ Note: Pod image will fail until build is complete
       enableUserWorkload: true
   EOF
   ```
-  echo << EOF >>
-
 - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I ama troubleshooting.
 
     ```bash
