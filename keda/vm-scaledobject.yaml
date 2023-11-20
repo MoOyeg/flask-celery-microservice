@@ -12,12 +12,14 @@ spec:
     apiVersion: pool.kubevirt.io/v1alpha1
     kind: VirtualMachinePool
     name: celery-workers-pool
+  advanced:
+    restoreToOriginalReplicaCount: true
   triggers:
   - type: cpu 
     metricType: Utilization 
     metadata:
-      value: '75' 
+      value: '35' 
   - type: memory 
     metricType: Utilization 
     metadata:
-      value: '80' 
+      value: '75' 

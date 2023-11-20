@@ -10,6 +10,8 @@ spec:
   pollingInterval: 10
   scaleTargetRef:
     name: celery-worker
+  advanced:
+    restoreToOriginalReplicaCount: true
   triggers:
   - type: cpu 
     metricType: Utilization 

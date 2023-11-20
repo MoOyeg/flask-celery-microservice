@@ -43,8 +43,14 @@ spec:
             machine:
               type: pc-q35-rhel9.2.0
             resources:
+#spec.virtualMachineTemplate.spec.template.spec.domain.resources.limits.cpu: Invalid value: "number": 
+#spec.virtualMachineTemplate.spec.template.spec.domain.resources.limits.cpu in body must be of type integer: "number"
               requests:
-                memory: 0.5Gi
+                memory: 0.50Gi
+                cpu: 1
+              limits:
+                memory: 0.50Gi
+                cpu: 1
           terminationGracePeriodSeconds: 0
           volumes:
             - containerDisk:
