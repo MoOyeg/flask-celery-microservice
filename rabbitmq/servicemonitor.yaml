@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: rabbitmq-monitor
+  namespace: rabbitmq
+spec:
+  endpoints:
+    - interval: 10s
+      path: /metrics
+      port: prometheus
+      scheme: http
+  selector:
+    matchLabels:
+      name: rabbitmq

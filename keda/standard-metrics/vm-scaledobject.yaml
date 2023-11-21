@@ -1,7 +1,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: vm-scaledobject
+  name: vm-standard-scaledobject
   namespace: celery-workers
 spec:
   cooldownPeriod: 100

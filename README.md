@@ -113,7 +113,7 @@ Note: Pod image will fail until build is complete
       enableUserWorkload: true
   EOF
   ```
-- To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I ama troubleshooting.
+- To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I am troubleshooting.
 
     ```bash
     oc apply -k ./keda    
@@ -168,10 +168,11 @@ You can build the VM image or use the pre-built image.
 
 
 ### Enable Autoscaling via RabbitMQ Queue Length(TODO)
+```bash
 oc create serviceaccount thanos -n celery-workers
-export SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
-oc kustomize ./keda | envsubst | oc apply -f -
-
+export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')  
+oc kustomize ./keda | envsubst | oc apply -f -  
+```
 
 ## Clean up
 ```bash
