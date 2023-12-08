@@ -4,11 +4,22 @@ metadata:
   name: rabbitmq-monitor
   namespace: rabbitmq
 spec:
-  endpoints:
-    - interval: 10s
-      path: /metrics
-      port: prometheus
-      scheme: http
   selector:
     matchLabels:
       name: rabbitmq
+  endpoints:
+  - port: prometheus
+    scheme: http
+    interval: 15s
+    scrapeTimeout: 14s
+  - port: prometheus
+    scheme: http
+    path: /metrics/detailed
+    params:
+      family:
+        - queue_coarse_metrics
+        - queue_metrics
+    interval: 15s
+    scrapeTimeout: 14s
+
+

@@ -54,7 +54,13 @@ Note: Pod image will fail until build is complete
 
 - You can install the Custom Metrics Autoscaler via console or create here.
     ```bash
-    oc apply -k ./keda-operator
+    oc apply -k ./keda-operator/operator
+    ```
+
+  Wait for KEDA Operator Install then create controller.
+  
+    ```bash
+    oc apply -k ./keda-operator/controller
     ```
 
 - Deploy Celery VM's with pre-built image. [To Build your own VM image](#building-celery-vmsoptional)  
@@ -67,7 +73,7 @@ Note: Pod image will fail until build is complete
 - Log into RabbitMQ to confirm Celery workers have registered as consumers
   Access RabbitMQ Mgmt URL at 
   ```bash
-  oc get route rabbitmq-mgmt -n rabbitmq -o jsonpath='{.spec.host}'
+  echo "https://$(oc get route rabbitmq-mgmt -n rabbitmq -o jsonpath='{.spec.host}')"
   ```
 
   Username and Password are:
@@ -88,10 +94,10 @@ Note: Pod image will fail until build is complete
   Obtain the Locust interface URL
 
   ```bash
-  oc get route locust -n locust -o jsonpath='{.spec.host}'
+  echo "https://$(oc get route locust -n locust -o jsonpath='{.spec.host}')"
   ```
 
-  On the locust URL start a user with as many users and spawn rate as required, the url should already be pointing to the flask server endpoint.
+  On the locust URL start a user with as many users and spawn rate as required (No of Users:100 and spawn count:10 - should trigger autoscale), the url should already be pointing to the flask server endpoint.
   ![Locust Interface](./images/locust.png)
 
   With our test started we should be getting data on locust charts.
@@ -99,6 +105,11 @@ Note: Pod image will fail until build is complete
 
   We should also be able to see data on RabbitMQ's Queue Tab specifically for the Celery Queue and see how much each consumer is processing.
   ![Celery Queue](./images/celery-queue.png)
+
+  And confirm the Registered consumers are our pods and vm's via their IP addresses.
+  ![RabbitMQ Consumers](./images/pod-vm-rabbitmq-output.png)
+
+  ![Pod/VM IP's](./images/pod-vm-ip-output.png )
 
 - Being testing KEDA with [enabled user workload monitoring](https://docs.openshift.com/container-platform/4.13/monitoring/enabling-monitoring-for-user-defined-projects.html)
   ```bash
