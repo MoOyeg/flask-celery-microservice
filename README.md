@@ -124,10 +124,14 @@ Note: Pod image will fail until build is complete
       enableUserWorkload: true
   EOF
   ```
+
+
 - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I am troubleshooting.
 
     ```bash
-    oc apply -k ./keda    
+    oc create serviceaccount thanos -n celery-workers
+    export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')  
+    oc kustomize ./keda | envsubst | oc apply -f - 
     ```
 
 - You can re-run the locust test above to see how it handles autoscaling.
@@ -187,17 +191,33 @@ oc kustomize ./keda | envsubst | oc apply -f -
 
 ## Clean up
 ```bash
-oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f -
-oc delete -k ./celery-vm-workers/deploy
+oc kustomize ./keda | envsubst | oc delete -f -  
+oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f -   
 oc delete -k ./keda
-oc delete -k ./keda-operator
+oc delete -k ./celery-vm-workers/deploy
+oc delete -k ./keda-operator/controller
+oc delete -k ./keda-operator/operator
 oc delete -k ./locust
 oc delete -k ./celery-workers
 oc delete -k ./postgresql
 oc delete -k ./rabbitmq
 oc delete -k ./flask-server-deploy
 ```
-
+## One-Line Create
+```bash
+oc apply -k ./flask-server-deploy
+oc apply -k ./rabbitmq
+oc apply -k ./postgresql
+oc apply -k ./celery-workers
+oc apply -k ./locust
+oc apply -k ./keda-operator/operator
+oc apply -k ./keda-operator/controller
+oc apply -k ./celery-vm-workers/deploy
+oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -
+oc create serviceaccount thanos -n celery-workers
+export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')
+oc kustomize ./keda | envsubst | oc apply -f - 
+```
 
 
 
