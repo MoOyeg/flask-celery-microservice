@@ -207,6 +207,7 @@ oc delete -k ./flask-server-deploy
 ```bash
 oc apply -k ./flask-server-deploy
 oc apply -k ./rabbitmq
+oc start-build buildconfig/rabbitmq -n rabbitmq
 oc apply -k ./postgresql
 oc apply -k ./celery-workers
 oc apply -k ./locust
