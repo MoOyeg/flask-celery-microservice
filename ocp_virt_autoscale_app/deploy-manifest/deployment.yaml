@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-autoscale-app
+  namespace: celery-workers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: custom-autoscale-app
+  template:
+    metadata:
+      labels:
+        name: custom-autoscale-app
+    spec:
+      containers:
+        - name: custom-autoscale-app
+          image: image-registry.openshift-image-registry.svc:5000/celery-workers/custom-autoscale-app:latest
+          ports:
+            - containerPort: 8080
+              name: rest
+      serviceAccountName: custom-vm-autoscale-app-sa
+      serviceAccount: custom-vm-autoscale-app-sa

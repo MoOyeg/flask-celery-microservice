@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: custom-autoscale-app
+  namespace: celery-workers
+spec:
+  to:
+    kind: Service
+    name: custom-autoscale-app
+    weight: 100
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+  wildcardPolicy: None

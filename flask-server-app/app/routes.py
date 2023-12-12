@@ -5,6 +5,8 @@ from app.tasks import *
 import os
 import subprocess
 
+virtualmachine_stack = []
+
 @app.route('/')
 def default():
     return "Welcome to Report Service"

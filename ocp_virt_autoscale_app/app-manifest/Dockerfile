@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Set work directory
 WORKDIR /app
@@ -18,5 +18,4 @@ RUN apt update && apt install -y wget gettext && \
 # Copy code
 COPY . /app/
 
-CMD gunicorn --workers 10 --bind 0.0.0.0:5000 --log-level DEBUG main:app
-
+CMD python run.py
