@@ -187,7 +187,7 @@ You can build the VM image or use the pre-built image.
 
    - To Deploy custom autoscale App
      ```bash
-     oc apply -k ./ocp_virt_autoscale_app//deploy-manifest
+     oc apply -k ./ocp_virt_autoscale_app/deploy-manifest
      ```
 
 ### Enable Autoscaling via RabbitMQ Queue Length(TODO)
