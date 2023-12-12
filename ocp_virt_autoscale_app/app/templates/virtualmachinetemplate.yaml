@@ -1,0 +1,60 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: {{ Name }}
+  namespace: {{ Namespace }}
+  labels:
+    {{ Labels }}: "true"
+spec:
+  running: true
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        {{ Labels }}: "true"
+    spec:
+      architecture: amd64
+      domain:
+        cpu:
+          cores: 1
+          model: host-model
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+            - disk:
+                bus: virtio
+              name: containerdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+            - disk:
+                bus: virtio
+              name: environment-disk-celerysecret
+        features:
+          acpi:
+            enabled: true
+        machine:
+          type: pc-q35-rhel9.2.0
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: '1'
+            memory: 512Mi
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - containerDisk:
+            image: {{  ContainerDiskImage }}
+          name: containerdisk
+        - name: environment-disk-celerysecret
+          secret:
+            secretName: celery-workers-secret
+        - cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              user: centos
+              password: centos
+              chpasswd: { expire: False }
+          name: cloudinitdisk

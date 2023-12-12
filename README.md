@@ -125,7 +125,6 @@ Note: Pod image will fail until build is complete
   EOF
   ```
 
-
 - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I am troubleshooting.
 
     ```bash
