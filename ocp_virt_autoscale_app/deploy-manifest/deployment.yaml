@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-server
+  namespace: flask-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: flask-server
+  template:
+    metadata:
+      labels:
+        name: flask-server
+    spec:
+      containers:
+        - name: flask-server
+          image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
+          env:
+            - name: APP_MODULE
+              value: 'main:app'
+          envFrom:
+            - secretRef:
+                name: flask-secret
+          ports:
+            - containerPort: 8080
+              name: rest
