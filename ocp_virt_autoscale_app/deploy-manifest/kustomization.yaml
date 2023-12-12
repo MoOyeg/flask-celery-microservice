@@ -1,0 +1,9 @@
+resources:
+  - imagestream.yaml
+  - buildconfig.yaml
+  - serviceaccount.yaml
+  - role.yaml
+  - rolebinding.yaml
+  - deployment.yaml
+  - service.yaml
+  - route.yaml

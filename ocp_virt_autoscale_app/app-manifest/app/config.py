@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     virtualmachine_min:int = int(os.environ.get('VIRTUALMACHINE_MIN') or 2)
     virtualmachine_prefix:str = os.environ.get('VIRTUALMACHINE_PREFIX') or 'celery-worker-vm-'
     containerdiskimage:str = os.environ.get('CONTAINER_DISK_IMAGE') or 'quay.io/mooyeg/containerdisk-celery:v1.0'
-    #thanos_url:str = os.environ.get('THANOS_URL') or 'https://thanos-querier.thanos.svc.cluster.local:9092/api/v1/query'
-    thanos_url:str = os.environ.get('THANOS_URL') or 'https://localhost:9092/api/v1/query'
+    thanos_url:str = os.environ.get('THANOS_URL') or 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9092/api/v1/query'
+    #thanos_url:str = os.environ.get('THANOS_URL') or 'https://localhost:9092/api/v1/query'
     thanos_ssl_verify:bool = bool(os.environ.get('THANOS_SSL_VERIFY') or False)
     
     #Location of ServiceAccountFile with access to Thanos

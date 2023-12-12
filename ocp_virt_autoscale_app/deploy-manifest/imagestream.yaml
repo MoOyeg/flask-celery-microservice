@@ -1,7 +1,7 @@
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
-  name: flask-server
+  name: custom-autoscale-app
   namespace: celery-workers
 spec:
   lookupPolicy:

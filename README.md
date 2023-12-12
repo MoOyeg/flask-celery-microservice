@@ -4,13 +4,15 @@ This repo acts as a proof of concept for showcasing:
 - Autoscaling VirtualMachines and Pods with the [Custom Metrics Autoscaler - KEDA](https://docs.openshift.com/container-platform/4.13/nodes/cma/nodes-cma-autoscaling-custom.html) on OpenShift.
 - Simulating manual scaling with the application being auto-scaled controlling the min and max replica count as desired.
 - Working with mixed Pod and VM autoscaling.
+- Example of writing your own Autoscaler for VM's.
 
  A lot of the code used here was from the the excellent work done here - [Scaling Celery workers with RabbitMQ on Kubernetes](https://learnk8s.io/scaling-celery-rabbitmq-kubernetes). I have updated it to:
  - Python version 3.9
  - Rewritten specifically for OpenShift Usage.
  - Added support for [VirtualMachines - OpenShift Virtualization](https://docs.openshift.com/container-platform/4.13/virt/about-virt.html)
 
-
+## Solution 1: Leverage VMPools with HPA or KEDA
+-----------------
 ## Architecture
 ![Architecture Diagram](./images/KEDA-VM.png)
 TODO: Autoscaling via RabbitMQ queue length( Blue Color) not yet complete. Cluster metrics autoscaling on OCP does not yet support amqp but does support prometheus.
@@ -180,6 +182,13 @@ You can build the VM image or use the pre-built image.
     oc secrets link pipelines-sa-userid-1000 quay-pull-secret -n celery-workers --for=pull,mount    
     ```
 
+## Solution 2: Write a Custom Autoscaler for VM's.
+   - [Code for Autoscaler App can be found here](./ocp_virt_autoscale_app/)
+
+   - To Deploy custom autoscale App
+     ```bash
+     oc apply -k ./ocp_virt_autoscale_app//deploy-manifest
+     ```
 
 ### Enable Autoscaling via RabbitMQ Queue Length(TODO)
 ```bash

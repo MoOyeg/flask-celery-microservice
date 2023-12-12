@@ -1,27 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask-server
-  namespace: flask-backend
+  name: custom-autoscale-app
+  namespace: celery-workers
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: flask-server
+      name: custom-autoscale-app
   template:
     metadata:
       labels:
-        name: flask-server
+        name: custom-autoscale-app
     spec:
       containers:
-        - name: flask-server
-          image: image-registry.openshift-image-registry.svc:5000/flask-backend/flask-server:latest
-          env:
-            - name: APP_MODULE
-              value: 'main:app'
-          envFrom:
-            - secretRef:
-                name: flask-secret
+        - name: custom-autoscale-app
+          image: image-registry.openshift-image-registry.svc:5000/celery-workers/custom-autoscale-app:latest
           ports:
             - containerPort: 8080
               name: rest
+      serviceAccountName: custom-vm-autoscale-app-sa
+      serviceAccount: custom-vm-autoscale-app-sa
