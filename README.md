@@ -4,7 +4,7 @@ This repo acts as a proof of concept for showcasing:
 - Autoscaling VirtualMachines and Pods with the [Custom Metrics Autoscaler - KEDA](https://docs.openshift.com/container-platform/4.13/nodes/cma/nodes-cma-autoscaling-custom.html) on OpenShift.
 - Simulating manual scaling with the application being auto-scaled controlling the min and max replica count as desired.
 - Working with mixed Pod and VM autoscaling.
-- Example of writing your own Autoscaler for VM's.
+- [Example of writing your own Autoscaler for VM's.](#solution-2-write-a-custom-autoscaler-for-vms)
 
  A lot of the code used here was from the the excellent work done here - [Scaling Celery workers with RabbitMQ on Kubernetes](https://learnk8s.io/scaling-celery-rabbitmq-kubernetes). I have updated it to:
  - Python version 3.9
