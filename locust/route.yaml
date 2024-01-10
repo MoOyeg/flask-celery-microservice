@@ -6,7 +6,6 @@ metadata:
   labels:
     name: locust-instance
 spec:
-  host: locust-locust.apps.cluster1.tide.lan
   to:
     kind: Service
     name: locust

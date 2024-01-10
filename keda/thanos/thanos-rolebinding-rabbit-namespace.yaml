@@ -5,7 +5,7 @@ metadata:
   namespace: rabbitmq
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: ClusterRole
   name: thanos-metrics-reader
 subjects:
   - kind: ServiceAccount

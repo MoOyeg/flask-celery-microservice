@@ -1,7 +1,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   name: thanos-metrics-reader
+  namespace: celery-workers
 rules:
 - apiGroups:
   - ""

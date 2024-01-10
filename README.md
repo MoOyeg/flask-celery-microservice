@@ -127,12 +127,9 @@ Note: Pod image will fail until build is complete
   ```
   - Enable KEDA access to prometheus metrics via appropriate serviceaccount, for the namespaces we might collect data from.
     ```bash
-    for METRICS_NAMESPACE in celery-workers
-    do 
-      oc create serviceaccount thanos -n ${METRICS_NAMESPACE}
-      export SA_TOKEN=$(oc describe sa/thanos -n ${METRICS_NAMESPACE} | grep -i Tokens | awk '{print $2}')
-      oc kustomize ./keda/thanos | envsubst | oc apply -n ${METRICS_NAMESPACE} -f - 
-    done
+      oc create serviceaccount thanos -n celery-workers
+      export SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
+      oc kustomize ./keda/thanos | envsubst | oc apply -f - 
     ```
 
   ### Test Autoscaling via RabbitMQ Prometheus Queue Length.
@@ -233,9 +230,12 @@ You can build the VM image or use the pre-built image.
 
 ## Clean up
 ```bash
-oc kustomize ./keda | envsubst | oc delete -f -  
-oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f -   
-oc delete -k ./keda
+oc delete -k ./ocp_virt_autoscale_app/deploy-manifest
+oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc delete -f -
+oc delete -k ./keda/prom-metrics
+oc delete -k ./keda/standard-metrics/
+oc delete -k ./keda/rabbitmq-prom-metrics/
+oc kustomize ./keda/thanos | envsubst | oc delete -f -
 oc delete -k ./celery-vm-workers/deploy
 oc delete -k ./keda-operator/controller
 oc delete -k ./keda-operator/operator
@@ -245,6 +245,7 @@ oc delete -k ./postgresql
 oc delete -k ./rabbitmq
 oc delete -k ./flask-server-deploy
 ```
+
 ## One-Line Create
 ```bash
 oc apply -k ./flask-server-deploy
@@ -256,13 +257,13 @@ oc apply -k ./locust
 oc apply -k ./keda-operator/operator
 oc apply -k ./keda-operator/controller
 oc apply -k ./celery-vm-workers/deploy
-oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -
 oc create serviceaccount thanos -n celery-workers
-export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')
-oc kustomize ./keda | envsubst | oc apply -f - 
+export SA_TOKEN=$(oc describe sa/thanos -n celery-workers | grep -i Tokens | awk '{print $2}')
+oc kustomize ./keda/thanos | envsubst | oc apply -f - 
+oc apply -k ./keda/rabbitmq-prom-metrics/
+oc apply -k ./keda/standard-metrics/
+oc apply -k ./keda/prom-metrics
 ```
-
-
 
 
 
