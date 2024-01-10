@@ -16,6 +16,11 @@ spec:
       labels:
         name: rabbitmq
     spec:
+      volumes:
+        - name: rabbitmq-extra-config
+          configMap:
+            name: rabbitmq-extra-config
+            defaultMode: 420
       containers:
       - name: rabbitmq
         image: image-registry.openshift-image-registry.svc:5000/rabbitmq/rabbitmq:latest
@@ -29,3 +34,6 @@ spec:
           name: rabbitmq
         - containerPort: 15692
           name: prometheus
+        volumeMounts:
+          - name: rabbitmq-extra-config
+            mountPath: /etc/rabbitmq/conf.d

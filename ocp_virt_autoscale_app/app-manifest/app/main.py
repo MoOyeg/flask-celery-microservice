@@ -78,6 +78,8 @@ class VirtualMachine():
     
     def __eq__(self, other):
         if isinstance(other, VirtualMachine):
+            if self.creation_timestamp is not None and other.creation_timestamp is not None:
+                return str(self) == str(other)
             return self.name == other.name
         return False
         

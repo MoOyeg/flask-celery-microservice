@@ -2,7 +2,6 @@ apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: keda-trigger-auth-prometheus
-  namespace: celery-workers
 spec:
   secretTargetRef: 
   - parameter: bearerToken 

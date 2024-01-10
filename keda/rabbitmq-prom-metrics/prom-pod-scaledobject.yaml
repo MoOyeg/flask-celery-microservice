@@ -1,0 +1,27 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: pod-celery-scaledobject
+  namespace: celery-workers
+spec:
+  cooldownPeriod: 100
+  maxReplicaCount: 10
+  minReplicaCount: 2
+  pollingInterval: 10
+  scaleTargetRef:
+    name: celery-worker
+  advanced:
+    restoreToOriginalReplicaCount: true
+  triggers:
+  - type: prometheus
+    authenticationRef:
+      name: keda-trigger-auth-prometheus
+    metadata:
+#If rabbitmq queue has more than 200 messages then scale up
+      serverAddress: https://thanos-querier.openshift-monitoring.svc.cluster.local:9092 
+      namespace: rabbitmq
+      threshold: '200'
+      query: max(rabbitmq_queue_messages{queue="celery"})
+      authModes: "bearer"
+      ignoreNullValues: "false"
+      unsafeSsl: "false"

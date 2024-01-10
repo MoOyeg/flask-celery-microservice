@@ -1,6 +1,5 @@
 resources:
 - thanos-role.yaml
 - thanos-rolebinding.yaml
+- thanos-rolebinding-rabbit-namespace.yaml
 - triggerauthentication.yaml
-- pod-scaledobject.yaml
-- ./standard-metrics/vm-scaledobject.yaml

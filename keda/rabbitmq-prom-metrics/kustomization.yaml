@@ -1,0 +1,3 @@
+resources:
+- prom-pod-scaledobject.yaml
+- prom-vm-scaledobject.yaml

@@ -2,6 +2,7 @@ resources:
 - namespace.yaml
 - imagestream.yaml
 - buildconfig.yaml
+- configmap.yaml
 - secret.yaml
 - service.yaml
 - deployment.yaml

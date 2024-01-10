@@ -1,0 +1,3 @@
+resources:
+- pod-scaledobject.yaml
+- vm-scaledobject.yaml

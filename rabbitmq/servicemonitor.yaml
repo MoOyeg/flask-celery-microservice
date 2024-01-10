@@ -12,14 +12,6 @@ spec:
     scheme: http
     interval: 15s
     scrapeTimeout: 14s
-  - port: prometheus
-    scheme: http
-    path: /metrics/detailed
-    params:
-      family:
-        - queue_coarse_metrics
-        - queue_metrics
-    interval: 15s
-    scrapeTimeout: 14s
+    path: /metrics/per-object
 
 

@@ -1,0 +1,29 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vm-prometheus-scaledobject
+  namespace: celery-workers
+spec:
+  cooldownPeriod: 100
+  maxReplicaCount: 10
+  minReplicaCount: 2
+  pollingInterval: 10
+  scaleTargetRef:
+    apiVersion: pool.kubevirt.io/v1alpha1
+    kind: VirtualMachinePool
+    name: celery-workers-pool
+  advanced:
+    restoreToOriginalReplicaCount: true
+  triggers:
+  - type: prometheus
+    authenticationRef:
+      name: keda-trigger-auth-prometheus
+    metadata:
+#If at least 2 VM's go above 250MB of memory usage over 30sec in the last 5 mins then scale up
+      serverAddress: https://thanos-querier.openshift-monitoring.svc.cluster.local:9092 
+      namespace: celery-workers
+      threshold: '2'
+      query: count(kubevirt_vmi_memory_used_bytes{kubernetes_vmi_label_kubevirt_io_vm="celery-workers-pool"}>200000000)
+      authModes: "bearer"
+      ignoreNullValues: "false"
+      unsafeSsl: "false"

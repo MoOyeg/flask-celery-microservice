@@ -15,7 +15,6 @@ This repo acts as a proof of concept for showcasing:
 -----------------
 ## Architecture
 ![Architecture Diagram](./images/KEDA-VM.png)
-TODO: Autoscaling via RabbitMQ queue length( Blue Color) not yet complete. Cluster metrics autoscaling on OCP does not yet support amqp but does support prometheus.
 
 ## Prerequsites
 - Tested on OpenShift 4.13
@@ -113,7 +112,7 @@ Note: Pod image will fail until build is complete
 
   ![Pod/VM IP's](./images/pod-vm-ip-output.png )
 
-- Being testing KEDA with [enabled user workload monitoring](https://docs.openshift.com/container-platform/4.13/monitoring/enabling-monitoring-for-user-defined-projects.html)
+- User Workload Monitoring [enabled user workload monitoring](https://docs.openshift.com/container-platform/4.13/monitoring/enabling-monitoring-for-user-defined-projects.html)
   ```bash
   cat << EOF | oc create -f -
   apiVersion: v1
@@ -126,16 +125,58 @@ Note: Pod image will fail until build is complete
       enableUserWorkload: true
   EOF
   ```
-
-- To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I am troubleshooting.
-
+  - Enable KEDA access to prometheus metrics via appropriate serviceaccount, for the namespaces we might collect data from.
     ```bash
-    oc create serviceaccount thanos -n celery-workers
-    export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')  
-    oc kustomize ./keda | envsubst | oc apply -f - 
+    for METRICS_NAMESPACE in celery-workers
+    do 
+      oc create serviceaccount thanos -n ${METRICS_NAMESPACE}
+      export SA_TOKEN=$(oc describe sa/thanos -n ${METRICS_NAMESPACE} | grep -i Tokens | awk '{print $2}')
+      oc kustomize ./keda/thanos | envsubst | oc apply -n ${METRICS_NAMESPACE} -f - 
+    done
     ```
 
-- You can re-run the locust test above to see how it handles autoscaling.
+  ### Test Autoscaling via RabbitMQ Prometheus Queue Length.
+  What: Expose the queue depth of RabbitMQ via Prometheus Metrics.OpenShift Metrics AutoScaler can use the exposed queue depth metrics to scale our pods.
+
+    - Enable RabbitMQ Prometheus Plugin and use in-built prometheus to scrape metrics.This should have already been done with the rabbitmq create command above. Explanation provided below:
+
+      RabbitMQ Plugin enabled in [DockerFile](./rabbitmq/Dockerfile)
+    
+      [RabbitMQ Deployment](./rabbitmq/deployment.yaml) mounts a configuration file via [configmap](./rabbitmq/configmap.yaml) that specifies prometheus.return_per_object_metrics option so we can get queue depth per queue.
+
+      We use a [servicemonitor](./rabbitmq/servicemonitor.yaml) object to tell the integrated prometheus that we would like to scrape that endpoint.
+
+      Once the Servicemonitor is created the integrated Prometheus will add the endpoint as a target, and we can confirm it's status in the OpenShift console under observe and target.
+      ![rabbitmq_metrics_target](./images/rabbitmq_metrics_target.png)
+
+      We can also see the queue depth in the console under Observe-Metrics.
+      ![rabbitmq_prom_queue_metrics](./images/rabbitmq_queue_prom_metrics.png)
+
+    - Create KEDA ScaledObjects to autoscale our Pod's and VM's based on prometheus metrics. Note this will give this error 'admission webhook "vscaledobject.kb.io" denied the request:' if virtualization is not installed. The scaledobject for the pod deployment will work just fine so continue if you are not testing virtualization.
+
+      ```bash
+      oc apply -k ./keda/rabbitmq-prom-metrics/
+      ```
+
+    - You can re-run the locust test above to see how it handles autoscaling.
+
+  ### Test Autoscaling via CPU/Memory and HPA PodMetrics.
+    - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's and Pods.Note!!! - The KEDA behaviour with VM's seems a bit inconsistent. I am troubleshooting.Note this will give this error 'admission webhook "vscaledobject.kb.io" denied the request:' if virtualization is not installed. The scaledobject for the pod deployment will work just fine so continue if you are not testing virtualization.
+
+        ```bash
+        oc apply -k ./keda/standard-metrics/
+        ```
+
+    - You can re-run the locust test above to see how it handles autoscaling.
+
+  ### Test Autoscaling via CPU/Memory but using CPU/Memory from Kubevirt Prometheus data
+    - To allow CPU and memory Autoscaling we can deploy scaledobject's for VM's. THis test uses kubevirt data exposed via the prometheus endpoint for CPU and memory info
+
+        ```bash
+        oc apply -k ./keda/prom-metrics
+        ```
+
+    - You can re-run the locust test above to see how it handles autoscaling.
 
 ### Simulate Application Manual Scaling 
 To simulate the application use-case where the application might want to be able to pre-scale or use it's own logic to control scaling. We send a curl request to our flask application which has embedded logic(it just shells out to oc cmd line) to scale down our instances.
@@ -183,19 +224,12 @@ You can build the VM image or use the pre-built image.
     ```
 
 ## Solution 2: Write a Custom Autoscaler for VM's.
-   - [Code for Autoscaler App can be found here](./ocp_virt_autoscale_app/)
+   - [Code for Autoscaler App can be found here](./ocp_virt_autoscale_app/README.md)
 
    - To Deploy custom autoscale App
      ```bash
      oc apply -k ./ocp_virt_autoscale_app/deploy-manifest
      ```
-
-### Enable Autoscaling via RabbitMQ Queue Length(TODO)
-```bash
-oc create serviceaccount thanos -n celery-workers
-export SA_TOKEN=$(oc describe sa/thanos -n celery-workers  | grep -i Tokens | awk '{print $2}')  
-oc kustomize ./keda | envsubst | oc apply -f -  
-```
 
 ## Clean up
 ```bash

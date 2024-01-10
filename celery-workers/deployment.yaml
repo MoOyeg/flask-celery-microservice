@@ -19,14 +19,14 @@ spec:
           command:
             - "bash"
             - "-c"
-            - "celery -A main.celery worker -l info"
+            - "celery -A main.celery worker -l debug"
           envFrom:
             - secretRef:
                 name: celery-workers-secret
           resources:
             limits:
               cpu: 200m
-              memory: 750Mi
+              memory: 1000Mi
             requests:
               cpu: 200m
-              memory: 750Mi
+              memory: 200Mi
