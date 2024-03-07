@@ -1,7 +1,11 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: pipelines-sa-userid-1000 
+  name: pipelines-sa-userid-1000
+secrets:
+  - name: ${REPO_SECRET}
+imagePullSecrets:
+  - name: ${REPO_SECRET}
 ---
 kind: SecurityContextConstraints
 metadata:

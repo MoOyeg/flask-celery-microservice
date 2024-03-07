@@ -8,6 +8,8 @@ rules:
   - ""
   resources:
   - pods
+  - VirtualMachine
+  - VirtualMachineInstance
   verbs:
   - get
 - apiGroups:
@@ -15,6 +17,8 @@ rules:
   resources:
   - pods
   - nodes
+  - VirtualMachine
+  - VirtualMachineInstance
   verbs:
   - get
   - list

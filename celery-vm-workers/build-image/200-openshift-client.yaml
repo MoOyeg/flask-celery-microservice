@@ -44,6 +44,29 @@ spec:
       description: The Object Type to check for
       type: string
 
+    - name: TOTAL_WAIT_TIME
+
+      description: The total time to wait for the object to be provisioned and deleted in seconds
+
+      type: string
+
+      default: "300"
+    
+    - name: EXIT_ON_TIMEOUT
+
+      description: If set to true, the task will exit if the timeout is reached
+
+      type: string
+
+      default: "false"
+
+    - name: DELETE_OBJECT_ON_TIMEOUT
+
+      description: If set to true, the task will delete the object if the timeout is reached
+
+      type: string
+
+      default: "false"
 
     - name: SLEEP_TIMER
       
@@ -51,7 +74,7 @@ spec:
   
       type: string
   
-      default: "5"
+      default: "10"
 
     - name: VERSION
 
@@ -66,8 +89,29 @@ spec:
     - name: oc
 
       image: quay.io/openshift/origin-cli:$(params.VERSION)
-      command:
-        - /bin/bash
-      args:
-        - -c
-        - while oc get  $(params.OBJECT_TYPE) $(params.OBJECT_NAME);do echo "Waiting for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) import to complete " && sleep $(params.SLEEP_TIMER) ;done
+      script: |
+        echo "Will wait for $(params.TOTAL_WAIT_TIME) seconds for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) to be provisioned/deleted"
+        end=$((SECONDS+$(params.TOTAL_WAIT_TIME)))
+        
+        until oc get $(params.OBJECT_TYPE) $(params.OBJECT_NAME);do
+          echo -e "Waiting $((end-SECONDS)) more seconds for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) to be provisioned\n"
+          sleep $(params.SLEEP_TIMER)
+        done
+
+        while oc get $(params.OBJECT_TYPE) $(params.OBJECT_NAME);do    
+          echo -e "Waiting $((end-SECONDS)) more seconds for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) import to complete and datavolume provisioned/deleted\n"
+          sleep $(params.SLEEP_TIMER)
+      
+          if [ $((end-SECONDS)) -le 0 ]; then
+            echo "Timed out waiting for $(params.OBJECT_TYPE) $(params.OBJECT_NAME) to be provisioned/deleted"
+            if [ "$(params.DELETE_OBJECT_ON_TIMEOUT)" == "true" ]; then
+              oc delete $(params.OBJECT_TYPE) $(params.OBJECT_NAME) && echo "Deleted $(params.OBJECT_TYPE) $(params.OBJECT_NAME)" || echo "Failed to delete $(params.OBJECT_TYPE) $(params.OBJECT_NAME)"
+            fi
+            
+            if [ "$(params.EXIT_ON_TIMEOUT)" == "true" ]; then
+              exit 1
+            fi
+            break
+          fi
+        done
+        

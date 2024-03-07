@@ -27,7 +27,7 @@ spec:
     - pipelineTaskName: build-containerdisk
       taskServiceAccountName: pipelines-sa-userid-1000
   timeouts:
-    pipeline: 1h0m0s
+    pipeline: 1h15m0s
   workspaces:
     - configmap:
         name: dockerfile

@@ -16,7 +16,7 @@ spec:
       url: >-
         docker://quay.io/containerdisks/centos-stream:9-2311080206
   storage:
-    storageClassName: $STORAGECLASS_NAME
+    storageClassName: ${STORAGECLASS_NAME}
     resources:
       requests:
         storage: 12Gi

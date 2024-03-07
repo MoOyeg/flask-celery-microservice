@@ -25,8 +25,8 @@ spec:
                 name: celery-workers-secret
           resources:
             limits:
-              cpu: 200m
-              memory: 1000Mi
+              cpu: 400m
+              memory: 2000Mi
             requests:
               cpu: 200m
-              memory: 200Mi
+              memory: 400Mi

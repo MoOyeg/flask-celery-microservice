@@ -194,7 +194,7 @@ curl -X POST -i "http://$(oc get route flask-server -n flask-backend -o jsonpath
 You can build the VM image or use the pre-built image. 
 
 - Build VM Image
-    To build the image we need a StorageClass that supports filesystems, export the name of the storageclass:
+    To build the image we need a StorageClass that supports filesystems, export the name of the storageclass e.g:
 
     ```bash
     export STORAGECLASS_NAME=ocs-storagecluster-cephfs
@@ -205,19 +205,18 @@ You can build the VM image or use the pre-built image.
     ```bash
     export OUTPUT_IMAGE=quay.io/mooyeg/containerdisk-celery:latest
     ```
-
     [Create a secret with credentials for your registry](https://docs.openshift.com/container-platform/4.10/openshift_images/managing_images/using-image-pull-secrets.html#images-allow-pods-to-reference-images-from-secure-registries_using-image-pull-secrets)
+
+    Export your Repository Pull Secret Name e.g.
+
+    ``bash
+    export REPO_SECRET="quay-pull-secret"
+    ```
 
     Create the necessary manifests to build your image.(Might need to restart pipelinerun)
 
     ```bash
     oc kustomize ./celery-vm-workers/build-image/ | envsubst | oc apply -f -   
-    ```
-
-    Link your registry pull-secret with your serviceaccount 
-
-    ```bash
-    oc secrets link pipelines-sa-userid-1000 quay-pull-secret -n celery-workers --for=pull,mount    
     ```
 
 ## Solution 2: Write a Custom Autoscaler for VM's.

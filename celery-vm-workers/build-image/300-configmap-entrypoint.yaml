@@ -13,6 +13,7 @@ data:
     mount /dev/vdc /tmp/celery
     export CELERY_BROKER_URL=$(cat /tmp/celery/CELERY_BROKER_URL)
     export CELERY_RESULT_BACKEND=$(cat /tmp/celery/CELERY_RESULT_BACKEND)
-    export SECRET_KEY=$(cat /tmp/celery/SECRET_KEY) 
+    export SECRET_KEY=$(cat /tmp/celery/SECRET_KEY)
+    timedatectl set-timezone UTC
     python -m celery worker -l info
 

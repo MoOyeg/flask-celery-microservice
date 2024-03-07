@@ -8,6 +8,6 @@ roleRef:
   kind: ClusterRole
   name: thanos-metrics-reader
 subjects:
-- kind: ServiceAccount
-  name: thanos 
-  namespace: celery-workers
+  - kind: ServiceAccount
+    name: thanos 
+    namespace: celery-workers

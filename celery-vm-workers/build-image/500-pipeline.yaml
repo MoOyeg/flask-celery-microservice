@@ -1,8 +1,9 @@
+#Note: Pipeline requires a large amount of On Node Ephemeral storage to be able to run the virt-customize and buildah tasks.
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: celery-custom-build
-  namespace: celery-workers
+  namespace: celery-workers 
 spec:
   params:
     - description: The OpenShift object to check for
