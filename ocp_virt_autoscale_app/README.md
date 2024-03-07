@@ -1,6 +1,6 @@
 # Custom AutoScaling Service
 
-App written to provide an example custome representation of a VirtualMachine and Autoscaler
+App written to provide an example custom representation of a VirtualMachine and Autoscaler
 
 App configuration can be found in [config file](./app-manifest/app/config.py). Config file will read environment variables from deployment object when running.
 e.g Setting the VM_POLL_TIMER as an environment variable to change how the Application polls.
